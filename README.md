@@ -51,5 +51,8 @@ and set nc listner: nc -nvlp 443
 
 xxd -g 1 exploit.txt -> to read out the chars 
 
+objdump -d execution-flow-windows.exe | grep flag
+
+
 
 
