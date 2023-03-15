@@ -13,8 +13,14 @@ This Rep describes my steps for BoF.
  1. Step in code: #buf = b"A" * OFFSET #junk get to EIP
 
 2. Find bad Characters, send all chars, in hex to File and filter out bad ones: 
-3. find a jmp ESP instruction in code, so that we can put in our shellcode 
-4. Windows: use mona !mona jmp -r esp -cpb "\x00\x1a" use jump esp instruction, to fin the right address. 
+3. shortcut with Mona: !mona config -set workingfolder c:\log\%p
+   !mona bytearray -> create bytearray.bin
+   !mona compare -f C:\log\bad-characters-windows-4\bytearray.bin -a 005756C8 (address is where Badchars start, usually EBX?) 
+   !mona bytearray -cpb "\x00\x06\x0a\x1a\"
+   !mona compare -f C:\log\bad-characters-windows-4\bytearray.bin -a 005756C8 (address is where Badchars start, usually EBX?) 
+
+4. find a jmp ESP instruction in code, so that we can put in our shellcode 
+5. Windows: use mona !mona jmp -r esp -cpb "\x00\x1a" use jump esp instruction, to fin the right address. 
    Linux: need to disable ASLR: 
    echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
    check with: 
